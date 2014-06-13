@@ -1,0 +1,424 @@
+
+<html>
+ <head>
+  <title>Drug Memory Match</title>
+ </head>
+ <body>
+  <script src="http://www.codeskulptor.org/js/codemirror-compressed.js" type="text/javascript"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js" type="text/javascript"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js" type="text/javascript"></script>
+    <script src="http://www.codeskulptor.org/js/jquery.flot.min.js" type="text/javascript"></script>
+    <script src="http://www.codeskulptor.org/js/jquery.flot.axislabels.min.js" type="text/javascript"></script>
+    <script src="http://www.codeskulptor.org/js/jquery.flot.orderbars.min.js" type="text/javascript"></script>
+    <script src="http://www.codeskulptor.org/js/numeric-1.2.6.min.js" type="text/javascript"></script>
+    <script src="http://www.codeskulptor.org/skulpt/skulpt.min.js" type="text/javascript"></script>
+    <script src="http://www.codeskulptor.org/skulpt/skulpt-stdlib.js" type="text/javascript"></script>
+    <script src="http://www.codeskulptor.org/js/codeskulptor-compressed.js" type="text/javascript"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&amp;sensor=false"></script>
+ 
+  <script type="text/javascript">
+  // output functions are configurable.  This one just appends some text
+  // to a pre element.
+  function outf(text) {
+    var mypre = document.getElementById("output");
+    mypre.innerHTML = mypre.innerHTML + text;
+  }
+  function builtinRead(x) {
+    if (Sk.builtinFiles === undefined || Sk.builtinFiles["files"][x] === undefined)
+        throw "File not found: '" + x + "'";
+    return Sk.builtinFiles["files"][x];
+  }
+ 
+  function runit() {
+    var prog = document.getElementById("yourcode").value;
+    var mypre = document.getElementById("output");
+    mypre.innerHTML = '';
+    Sk.canvas = "mycanvas";
+    Sk.pre = "output";
+    Sk.configure({output:outf, read:builtinRead});
+    eval(Sk.importMainWithBody("<stdin>",false,prog));
+  }
+   function runit2() {
+    var prog = document.getElementById("yourcode2").value;
+    var mypre = document.getElementById("output");
+    mypre.innerHTML = '';
+    Sk.canvas = "mycanvas";
+    Sk.pre = "output";
+    Sk.configure({output:outf, read:builtinRead});
+    eval(Sk.importMainWithBody("<stdin>",false,prog));
+  }
+   function runit3() {
+    var prog = document.getElementById("yourcode2").value;
+    var mypre = document.getElementById("output");
+    mypre.innerHTML = '';
+    Sk.canvas = "mycanvas";
+    Sk.pre = "output";
+    Sk.configure({output:outf, read:builtinRead});
+    eval(Sk.importMainWithBody("<stdin>",false,prog));
+  }
+  </script>
+ 
+<h3>
+Choose your difficulty and play! :)</h3>
+Ignore the text boxes<br /><br />
+
+<form>
+
+  <textarea id="yourcode">
+
+import simplegui
+import random
+
+
+#Variables
+imagew = 100
+imageh = 100
+n = 4
+m = 4
+flipped = []
+
+
+
+def load_images():
+    global images, images2
+    images = []
+    images.append(simplegui.load_image("http://img.photobucket.com/albums/v321/ohshizititsme/185/1opiod_zpsf0232815.jpg"))
+    images.append(simplegui.load_image("http://img.photobucket.com/albums/v321/ohshizititsme/185/1tobacco_zps4c8775c0.jpg"))
+    images.append(simplegui.load_image("http://img.photobucket.com/albums/v321/ohshizititsme/185/1presciption_zps127d8dde.jpg"))
+    images.append(simplegui.load_image("http://img.photobucket.com/albums/v321/ohshizititsme/185/1stimulant_zpsba523a5b.jpg"))
+    images.append(simplegui.load_image("http://img.photobucket.com/albums/v321/ohshizititsme/185/opiod_zpse16e27f9.jpg"))
+    images.append(simplegui.load_image("http://img.photobucket.com/albums/v321/ohshizititsme/185/tobacco_zps99d09206.jpg"))
+    images.append(simplegui.load_image("http://img.photobucket.com/albums/v321/ohshizititsme/185/prescription_zps1f844b4b.jpg"))
+    images.append(simplegui.load_image("http://img.photobucket.com/albums/v321/ohshizititsme/185/stimulant_zpsd3f59e84.jpg"))
+   
+# helper function to initialize environment globals
+def init():
+    global deck, state, sideUp, score, Counter
+    sideUp = [False] * n * m   
+    deck = 2*range(n*m/2)
+    Counter = 0
+    random.shuffle(deck)
+          
+        
+# define event handlers
+def mouseclick(xy):
+    global Counter,turns
+    if Counter==0:
+        flipped.append((xy[0]/imagew) + (xy[1]/imageh) * m)
+        sideUp[(xy[0]/imagew) + (xy[1]/imageh) * m] = True
+        Counter=1
+        turns=1
+        
+    elif Counter==1:
+        if not ((xy[0]/imagew) + (xy[1]/imageh) * m in flipped):
+            flipped.append((xy[0]/imagew) + (xy[1]/imageh) * m)
+            Counter=2
+        sideUp[(xy[0]/imagew) + (xy[1]/imageh) * m] = True
+       
+    else:
+        if not ((xy[0]/imagew) + (xy[1]/imageh) * m in flipped):
+            if deck[flipped[-1]]!=deck[flipped[-2]]:
+                sideUp[flipped[-1]]=False
+                sideUp[flipped[-2]]=False
+                flipped.pop()
+                flipped.pop()
+            Counter=1
+            turns+=1
+            sideUp[(xy[0]/imagew) + (xy[1]/imageh) * m] = True
+            flipped.append((xy[0]/imagew) + (xy[1]/imageh) * m)
+    
+                        
+    
+def draw(canvas):
+    global score
+    
+    for i in range(n):
+        for j in range(m):
+            card = i * m + j
+            if sideUp[card]:
+                
+                canvas.draw_image(images[deck[card]], (imagew / 2, imageh / 2), 
+                                  (imagew, imageh), (j * imagew + imagew/2, i *imageh + imageh/2),(imagew, imageh))
+                
+                
+            canvas.draw_line((0,101),(400,101), 1, "White")
+            canvas.draw_line((0,201),(400,201), 1, "White")
+            canvas.draw_line((0,301),(400,301), 1, "White")
+            canvas.draw_line((101,0),(101,400), 1, "White")
+            canvas.draw_line((201,0),(201,400), 1, "White")
+            canvas.draw_line((301,0),(301,400), 1, "White")
+                  
+
+# create frame and add a button and labels
+
+frame = simplegui.create_frame("DRUG MEMORY MATCH", 400, 400)
+frame.add_button("Restart Game", init)
+
+
+# initialize global variables
+load_images()
+init()
+
+# User-lead event handlers
+frame.set_mouseclick_handler(mouseclick)
+frame.set_draw_handler(draw)
+
+# starter frame
+frame.start()
+
+
+  </textarea><br />
+  <button onclick="runit()" type="button">Easy</button>
+  </form>
+
+  <form>
+
+  <textarea id="yourcode2">
+
+import simplegui
+import random
+
+
+#Variables
+imagew = 100
+imageh = 100
+n = 4
+m = 6
+flipped = []
+
+
+
+def load_images():
+    global images, images2
+    images = []
+    images.append(simplegui.load_image("http://img.photobucket.com/albums/v321/ohshizititsme/185/1opiod_zpsf0232815.jpg"))
+    images.append(simplegui.load_image("http://img.photobucket.com/albums/v321/ohshizititsme/185/1tobacco_zps4c8775c0.jpg"))
+    images.append(simplegui.load_image("http://img.photobucket.com/albums/v321/ohshizititsme/185/1presciption_zps127d8dde.jpg"))
+    images.append(simplegui.load_image("http://img.photobucket.com/albums/v321/ohshizititsme/185/1stimulant_zpsba523a5b.jpg"))
+    images.append(simplegui.load_image("http://img.photobucket.com/albums/v321/ohshizititsme/185/opiod_zpse16e27f9.jpg"))
+    images.append(simplegui.load_image("http://img.photobucket.com/albums/v321/ohshizititsme/185/tobacco_zps99d09206.jpg"))
+    images.append(simplegui.load_image("http://img.photobucket.com/albums/v321/ohshizititsme/185/prescription_zps1f844b4b.jpg"))
+    images.append(simplegui.load_image("http://img.photobucket.com/albums/v321/ohshizititsme/185/stimulant_zpsd3f59e84.jpg"))
+
+    images.append(simplegui.load_image("http://img.photobucket.com/albums/v321/ohshizititsme/185/1alcohol_zpse54b80ec.jpg"))
+    images.append(simplegui.load_image("http://img.photobucket.com/albums/v321/ohshizititsme/185/1hallucinogen_zpse9de6ec9.jpg"))
+    images.append(simplegui.load_image("http://img.photobucket.com/albums/v321/ohshizititsme/185/1club_zps5d2d4e57.jpg"))
+    images.append(simplegui.load_image("http://img.photobucket.com/albums/v321/ohshizititsme/185/1cannabinoid_zps623e45ef.jpg"))
+    images.append(simplegui.load_image("http://img.photobucket.com/albums/v321/ohshizititsme/185/club_zps5ce827dd.jpg"))
+    images.append(simplegui.load_image("http://img.photobucket.com/albums/v321/ohshizititsme/185/alcohol_zpsc624a546.jpg"))
+    images.append(simplegui.load_image("http://img.photobucket.com/albums/v321/ohshizititsme/185/cannabinoid_zpsbc5a471a.jpg"))
+    images.append(simplegui.load_image("http://img.photobucket.com/albums/v321/ohshizititsme/185/psilocybin_zpsd07e3b04.jpg"))
+
+   
+# helper function to initialize environment globals
+def init():
+    global deck, state, sideUp, score, Counter
+    sideUp = [False] * n * m   
+    deck = 2*range(n*m/2)
+    Counter = 0
+    random.shuffle(deck)
+          
+        
+# define event handlers
+def mouseclick(xy):
+    global Counter,turns
+    if Counter==0:
+        flipped.append((xy[0]/imagew) + (xy[1]/imageh) * m)
+        sideUp[(xy[0]/imagew) + (xy[1]/imageh) * m] = True
+        Counter=1
+        turns=1
+        
+    elif Counter==1:
+        if not ((xy[0]/imagew) + (xy[1]/imageh) * m in flipped):
+            flipped.append((xy[0]/imagew) + (xy[1]/imageh) * m)
+            Counter=2
+        sideUp[(xy[0]/imagew) + (xy[1]/imageh) * m] = True
+       
+    else:
+        if not ((xy[0]/imagew) + (xy[1]/imageh) * m in flipped):
+            if deck[flipped[-1]]!=deck[flipped[-2]]:
+                sideUp[flipped[-1]]=False
+                sideUp[flipped[-2]]=False
+                flipped.pop()
+                flipped.pop()
+            Counter=1
+            turns+=1
+            sideUp[(xy[0]/imagew) + (xy[1]/imageh) * m] = True
+            flipped.append((xy[0]/imagew) + (xy[1]/imageh) * m)
+    
+                        
+    
+def draw(canvas):
+    global score
+    
+    for i in range(n):
+        for j in range(m):
+            card = i * m + j
+            if sideUp[card]:
+                
+                canvas.draw_image(images[deck[card]], (imagew / 2, imageh / 2), 
+                                  (imagew, imageh), (j * imagew + imagew/2, i *imageh + imageh/2),(imagew, imageh))
+                
+                
+	    canvas.draw_line((0,101),(600,101), 1, "White")
+            canvas.draw_line((0,201),(600,201), 1, "White")
+            canvas.draw_line((0,301),(600,301), 1, "White")
+            canvas.draw_line((101,0),(101,400), 1, "White")
+            canvas.draw_line((201,0),(201,400), 1, "White")
+            canvas.draw_line((301,0),(301,400), 1, "White")
+            canvas.draw_line((401,0),(401,400), 1, "White")
+            canvas.draw_line((501,0),(501,400), 1, "White")
+      
+                  
+
+# create frame and add a button and labels
+
+frame = simplegui.create_frame("DRUG MEMORY MATCH", 600, 400)
+frame.add_button("Restart Game", init)
+
+
+# initialize global variables
+load_images()
+init()
+
+# User-lead event handlers
+frame.set_mouseclick_handler(mouseclick)
+frame.set_draw_handler(draw)
+
+# starter frame
+frame.start()
+
+
+  </textarea><br />
+  <button onclick="runit2()" type="button">Medium</button>
+  </form>
+
+<form>
+
+  <textarea id="yourcode3">
+
+import simplegui
+import random
+
+
+#Variables
+imagew = 100
+imageh = 100
+n = 4
+m = 8
+flipped = []
+
+
+
+def load_images():
+    global images, images2
+    images = []
+    images.append(simplegui.load_image("http://img.photobucket.com/albums/v321/ohshizititsme/185/1opiod_zpsf0232815.jpg"))
+    images.append(simplegui.load_image("http://img.photobucket.com/albums/v321/ohshizititsme/185/1tobacco_zps4c8775c0.jpg"))
+    images.append(simplegui.load_image("http://img.photobucket.com/albums/v321/ohshizititsme/185/1presciption_zps127d8dde.jpg"))
+    images.append(simplegui.load_image("http://img.photobucket.com/albums/v321/ohshizititsme/185/1stimulant_zpsba523a5b.jpg"))
+    images.append(simplegui.load_image("http://img.photobucket.com/albums/v321/ohshizititsme/185/opiod_zpse16e27f9.jpg"))
+    images.append(simplegui.load_image("http://img.photobucket.com/albums/v321/ohshizititsme/185/tobacco_zps99d09206.jpg"))
+    images.append(simplegui.load_image("http://img.photobucket.com/albums/v321/ohshizititsme/185/prescription_zps1f844b4b.jpg"))
+    images.append(simplegui.load_image("http://img.photobucket.com/albums/v321/ohshizititsme/185/stimulant_zpsd3f59e84.jpg"))
+
+    images.append(simplegui.load_image("http://img.photobucket.com/albums/v321/ohshizititsme/185/1alcohol_zpse54b80ec.jpg"))
+    images.append(simplegui.load_image("http://img.photobucket.com/albums/v321/ohshizititsme/185/1hallucinogen_zpse9de6ec9.jpg"))
+    images.append(simplegui.load_image("http://img.photobucket.com/albums/v321/ohshizititsme/185/1club_zps5d2d4e57.jpg"))
+    images.append(simplegui.load_image("http://img.photobucket.com/albums/v321/ohshizititsme/185/1cannabinoid_zps623e45ef.jpg"))
+    images.append(simplegui.load_image("http://img.photobucket.com/albums/v321/ohshizititsme/185/club_zps5ce827dd.jpg"))
+    images.append(simplegui.load_image("http://img.photobucket.com/albums/v321/ohshizititsme/185/alcohol_zpsc624a546.jpg"))
+    images.append(simplegui.load_image("http://img.photobucket.com/albums/v321/ohshizititsme/185/cannabinoid_zpsbc5a471a.jpg"))
+    images.append(simplegui.load_image("http://img.photobucket.com/albums/v321/ohshizititsme/185/psilocybin_zpsd07e3b04.jpg"))
+
+   
+# helper function to initialize environment globals
+def init():
+    global deck, state, sideUp, score, Counter
+    sideUp = [False] * n * m   
+    deck = 2*range(n*m/2)
+    Counter = 0
+    random.shuffle(deck)
+          
+        
+# define event handlers
+def mouseclick(xy):
+    global Counter,turns
+    if Counter==0:
+        flipped.append((xy[0]/imagew) + (xy[1]/imageh) * m)
+        sideUp[(xy[0]/imagew) + (xy[1]/imageh) * m] = True
+        Counter=1
+        turns=1
+        
+    elif Counter==1:
+        if not ((xy[0]/imagew) + (xy[1]/imageh) * m in flipped):
+            flipped.append((xy[0]/imagew) + (xy[1]/imageh) * m)
+            Counter=2
+        sideUp[(xy[0]/imagew) + (xy[1]/imageh) * m] = True
+       
+    else:
+        if not ((xy[0]/imagew) + (xy[1]/imageh) * m in flipped):
+            if deck[flipped[-1]]!=deck[flipped[-2]]:
+                sideUp[flipped[-1]]=False
+                sideUp[flipped[-2]]=False
+                flipped.pop()
+                flipped.pop()
+            Counter=1
+            turns+=1
+            sideUp[(xy[0]/imagew) + (xy[1]/imageh) * m] = True
+            flipped.append((xy[0]/imagew) + (xy[1]/imageh) * m)
+    
+                        
+    
+def draw(canvas):
+    global score
+    
+    for i in range(n):
+        for j in range(m):
+            card = i * m + j
+            if sideUp[card]:
+                
+                canvas.draw_image(images[deck[card]], (imagew / 2, imageh / 2), 
+                                  (imagew, imageh), (j * imagew + imagew/2, i *imageh + imageh/2),(imagew, imageh))
+                
+                
+	    canvas.draw_line((0,101),(800,101), 1, "White")
+            canvas.draw_line((0,201),(800,201), 1, "White")
+            canvas.draw_line((0,301),(800,301), 1, "White")
+            canvas.draw_line((101,0),(101,400), 1, "White")
+            canvas.draw_line((201,0),(201,400), 1, "White")
+            canvas.draw_line((301,0),(301,400), 1, "White")
+            canvas.draw_line((401,0),(401,400), 1, "White")
+            canvas.draw_line((501,0),(501,400), 1, "White")
+            canvas.draw_line((601,0),(601,400), 1, "White")
+            canvas.draw_line((701,0),(701,400), 1, "White")      
+                  
+
+# create frame and add a button and labels
+
+frame = simplegui.create_frame("DRUG MEMORY MATCH", 800, 400)
+frame.add_button("Restart Game", init)
+
+
+# initialize global variables
+load_images()
+init()
+
+# User-lead event handlers
+frame.set_mouseclick_handler(mouseclick)
+frame.set_draw_handler(draw)
+
+# starter frame
+frame.start()
+
+
+  </textarea><br />
+  <button onclick="runit3()" type="button">Hard</button>
+  </form>
+
+
+<pre id="output"></pre>
+</body>
+</html> 
+
+
